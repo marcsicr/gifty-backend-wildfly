@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2"
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+    <!-- Define persistence unit -->
+    <persistence-unit name="pu-gifty" transaction-type="JTA">
+    	<description>This is a short text describing my persistence unit.</description>
+    	<!--  <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>-->
+    	<provider>org.hibernate.ejb.HibernatePersistence</provider>
+    	<jta-data-source>java:jboss/datasources/GiftyDB</jta-data-source>
+    	
+    	<properties>
+	    	
+	    	<!-- Generic JPA configuration attributes -->
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create" />
+            
+            <!-- Use the object/relational metadata in the application to create the database artifacts. -->
+            <property name="javax.persistence.schema-generation.create-source" value="metadata"/>
+            
+            <!-- Use script  to create the database artifacts
+            <property name="javax.persistence.schema-generation.create-source" value="script"/>
+            <property name="javax.persistence.schema-generation.create-script-source" value="META-INF/sql/create.sql"/>
+            -->
+          
+           <!-- Script to remove DB  -->
+           	<property name="javax.persistence.schema-generation.drop-source" value="script" />
+        	<property name="javax.persistence.schema-generation.drop-script-source" value="META-INF/sql/drop.sql" />
+        	
+          	<!-- Script to populate data -->
+            <property name="javax.persistence.sql-load-script-source" value="META-INF/sql/data.sql" />
+            
+            
+           
+           
+            
+            <property name="javax.persistence.schema-generation.create-database-schemas" value="true" />
+            
+
+            <!-- OpenJPA specific configuration attributes -->
+            <!--  <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(SchemaAction=add,ForeignKeys=true)" />
+            <property name="openjpa.jdbc.MappingDefaults" value="ForeignKeyDeleteAction=restrict,JoinForeignKeyDeleteAction=restrict" />-->
+           <!--  - <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
+            <property name="openjpa.Log" value="DefaultLevel=WARN, Runtime=INFO, Tool=INFO, SQL=TRACE" />-->
+      </properties>       
+    </persistence-unit>
+</persistence>

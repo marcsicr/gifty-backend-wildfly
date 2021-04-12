@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<Resource id="PostgresDB" type="DataSource">
+		JdbcDriver org.postgresql.Driver
+		JdbcUrl jdbc:postgresql://localhost:5432/postgres?currentSchema=gifty
+		UserName USER
+		Password 1234
+		JtaManaged true
+		InitialSize 10
+		MaxActive 128
+		MaxIdle 25
+		MinIdle 10
+		AccessToUnderlyingConnectionAllowed true
+		TestOnBorrow false
+		TestWhileIdle true
+		TimeBetweenEvictionRuns 1 minute
+     	MaxWaitTime 0 seconds
+      	PoolPreparedStatements true
+      	MaxOpenPreparedStatements 1024
+     	ValidationQuery select 1
+     	LogSql false
+	</Resource>
+</resources>

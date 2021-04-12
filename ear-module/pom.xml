@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+		 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<parent>
+		<groupId>cat.marcsicr</groupId>
+		<artifactId>gifty-backend</artifactId>
+		<version>1.0</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	
+
+	<artifactId>gifty-ear-module</artifactId>
+	<packaging>ear</packaging>
+	<name>Gifty EAR Module</name>
+	<description>Module for packaging WAR and EJB into EAR file</description>
+	
+	<properties>
+	
+		<wildfly-user>USER</wildfly-user>
+		<wildfly-password>1234</wildfly-password>
+		<wildfly-host>localhost</wildfly-host>
+		<wildfly-admin-port>9990</wildfly-admin-port>
+		
+	 <!-- PostgreSQL Setup -->
+		 <postgresql.driver.version>42.2.19</postgresql.driver.version>
+		 
+		 <pg-host>192.168.1.2</pg-host>
+		 <pg-port>5432</pg-port>
+		 
+		 <pg-user>postgres</pg-user>
+		 <pg-password>1234</pg-password>
+		 <gifty-schema-name>gifty</gifty-schema-name>
+		 
+	</properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>cat.marcsicr</groupId>
+			<artifactId>gifty-ejb-module</artifactId>
+			<version>1.0</version>
+			<type>ejb</type>	
+		</dependency>
+		<dependency>
+			<groupId>cat.marcsicr</groupId>
+			<artifactId>gifty-war-module</artifactId>
+			<version>1.0</version>
+			<type>war</type>
+		</dependency>
+		
+		<dependency>
+    		<groupId>org.postgresql</groupId>
+    		<artifactId>postgresql</artifactId>
+    		<version>${postgresql.driver.version}</version>
+		</dependency>
+		
+	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                
+                  	<archive>
+	            		<manifest>
+	                		<addClasspath>true</addClasspath>
+	            		</manifest>
+	            		<manifestEntries>
+    							<Dependencies>org.hibernate.commons-annotations</Dependencies>
+							</manifestEntries>
+        			</archive>
+        			
+                    <modules>
+                        <webModule>
+                            <groupId>cat.marcsicr</groupId>
+                            <artifactId>gifty-war-module</artifactId>
+                            <contextRoot>/gifty</contextRoot>
+                        </webModule>
+                        <ejbModule>
+                            <groupId>cat.marcsicr</groupId>
+                            <artifactId>gifty-ejb-module</artifactId>
+                        </ejbModule>
+                    </modules>
+                </configuration>
+	    	</plugin>
+	    	
+	    	<plugin>
+               	<groupId>org.wildfly.plugins</groupId>
+               	<artifactId>wildfly-maven-plugin</artifactId>
+               	<version>2.1.0.Beta1</version>
+               	<configuration>
+                		<hostname>${wildfly-host}</hostname>
+                		<username>${wildfly-user}</username>
+                		<password>${wildfly-password}</password>
+                		<port>${wildfly-admin-port}</port>   		
+                </configuration>
+               	<executions>
+               		<execution>
+            			<id>undeploy</id>
+            			<phase>clean</phase>
+            			<goals>
+            				<goal>undeploy</goal>
+            			</goals>
+            			<configuration>
+                            <ignoreMissingDeployment>true</ignoreMissingDeployment>
+                        </configuration>
+            		</execution>
+            		
+            		   <!-- Deploy the JDBC library -->
+                    <execution>
+                        <id>postgresql-driver</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <groupId>org.postgresql</groupId>
+                            <artifactId>postgresql</artifactId>
+                            <name>postgresql-${postgresql.driver.version}.jar</name>
+                        </configuration>
+                        <goals>
+                            <goal>deploy-artifact</goal>
+                        </goals>
+                    </execution>
+                    
+                    
+                    <execution>
+                    	<id>gifty-add-datasource</id>
+                    	<phase>install</phase>
+                    	<configuration>
+	                    	<address>subsystem=datasources,data-source=GiftyDB</address>
+	                    	<resources>
+	                    		<resource>
+	                    			<properties>
+	                    				<connection-url>jdbc:postgresql://${pg-host}:${pg-port}/postgres?currentSchema=${gifty-schema-name}</connection-url>
+	                    				<jndi-name>java:jboss/datasources/GiftyDB</jndi-name>
+	                    				<enabled>true</enabled>
+	                    				<user-name>${pg-user}</user-name>
+	                    				<password>${pg-password}</password>
+	                    				<driver-name>postgresql-${postgresql.driver.version}.jar</driver-name>
+	                    			</properties>
+	                    		</resource>
+	                    	</resources>
+                    	</configuration>
+                    	<goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                    </execution>
+            		
+            		 <execution>
+                        <id>redeploy</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                   
+               	</executions>
+            </plugin>
+		</plugins>
+	</build>
+</project>
