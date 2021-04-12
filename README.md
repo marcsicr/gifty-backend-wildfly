@@ -3,7 +3,7 @@ Backend implementation for Gifty using JavaEE (Wildfly) + PostgreSQL.
 
 ## About the project
 
-This is backend service for Gifty browser app that allows users to register, login and save their favorite gifs. The service has been implemented as a REST API.
+This is a backend service for Gifty browser app that allows users to register, login and save their favorite gifs. The service has been implemented as a REST API.
 
 ## Tools and libraries used
 * JavaEE + JAX-RS on Wildfly
